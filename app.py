@@ -1,35 +1,42 @@
-from flask import Flask, render_template, request, redirect, flash
+from flask import Flask, render_template, request, redirect, url_for, flash
 import sqlite3
+import os
 
 app = Flask(__name__)
 app.secret_key = "expense_secret_key"
 
+# ---------------- DB CONNECTION ----------------
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "expenses.db")
+
 def get_db_connection():
-    conn = sqlite3.connect("expenses.db")
+    conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
 
+# ---------------- CREATE TABLE ----------------
+def init_db():
+    conn = get_db_connection()
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS expenses (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            amount INTEGER NOT NULL,
+            category TEXT NOT NULL,
+            date TEXT NOT NULL,
+            description TEXT
+        )
+    """)
+    conn.commit()
+    conn.close()
 
-# Create table once
-conn = get_db_connection()
-conn.execute("""
-CREATE TABLE IF NOT EXISTS expenses (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    amount INTEGER,
-    category TEXT,
-    date TEXT,
-    description TEXT
-)
-""")
-conn.close()
+init_db()
 
-
+# ---------------- HOME ----------------
 @app.route("/", methods=["GET", "POST"])
 def home():
     conn = get_db_connection()
     error = None
 
-    # Add expense
     if request.method == "POST":
         amount = request.form.get("amount")
         category = request.form.get("category")
@@ -51,7 +58,6 @@ def home():
     expenses = conn.execute("SELECT * FROM expenses").fetchall()
     total = sum(exp["amount"] for exp in expenses)
 
-    # Chart data (group by category)
     chart_rows = conn.execute("""
         SELECT category, SUM(amount) as total
         FROM expenses
@@ -72,7 +78,7 @@ def home():
         amounts=amounts
     )
 
-
+# ---------------- DELETE ----------------
 @app.route("/delete/<int:id>")
 def delete(id):
     conn = get_db_connection()
@@ -80,15 +86,19 @@ def delete(id):
     conn.commit()
     conn.close()
     flash("Expense deleted 🗑")
-    return redirect("/")
+    return redirect(url_for("home"))
 
-
+# ---------------- EDIT ----------------
 @app.route("/edit/<int:id>", methods=["GET", "POST"])
 def edit(id):
     conn = get_db_connection()
     expense = conn.execute(
         "SELECT * FROM expenses WHERE id=?", (id,)
     ).fetchone()
+
+    if expense is None:
+        conn.close()
+        return redirect(url_for("home"))
 
     if request.method == "POST":
         conn.execute("""
@@ -105,11 +115,11 @@ def edit(id):
         conn.commit()
         conn.close()
         flash("Expense updated ✏️")
-        return redirect("/")
+        return redirect(url_for("home"))
 
     conn.close()
     return render_template("edit.html", expense=expense)
 
-
+# ---------------- RUN ----------------
 if __name__ == "__main__":
     app.run(debug=True)

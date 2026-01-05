@@ -2,9 +2,11 @@
 <html>
 <head>
     <title>Expense Tracker Dashboard</title>
+
+    <!-- CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
-    <!-- Chart.js CDN -->
+    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -19,22 +21,25 @@
 
     <!-- Flash Messages -->
     {% with messages = get_flashed_messages() %}
+      {% if messages %}
         {% for msg in messages %}
-            <div class="flash">{{ msg }}</div>
+          <div class="flash">{{ msg }}</div>
         {% endfor %}
+      {% endif %}
     {% endwith %}
 
+    <!-- Error -->
     {% if error %}
         <div class="error">{{ error }}</div>
     {% endif %}
 
-    <!-- Chart Card -->
+    <!-- Chart -->
     <div class="card">
         <h3>Expense by Category</h3>
         <canvas id="expenseChart"></canvas>
     </div>
 
-    <!-- Add Expense -->
+    <!-- Add Expense Form -->
     <form method="POST">
         <label>Amount</label>
         <input type="number" name="amount" required>
@@ -70,15 +75,15 @@
             <td>{{ exp.date }}</td>
             <td>{{ exp.description }}</td>
             <td>
-                <a href="/edit/{{ exp.id }}">Edit</a> |
-                <a href="/delete/{{ exp.id }}">Delete</a>
+                <a href="{{ url_for('edit', id=exp.id) }}">Edit</a> |
+                <a href="{{ url_for('delete', id=exp.id) }}">Delete</a>
             </td>
         </tr>
         {% endfor %}
     </table>
 </div>
 
-<!-- ✅ SAFE DATA (NO JS ERRORS) -->
+<!-- Chart Data (Safe JSON) -->
 <script id="chart-data" type="application/json">
 {
   "categories": {{ categories | tojson }},
@@ -86,15 +91,16 @@
 }
 </script>
 
-<!-- ✅ CLEAN JAVASCRIPT -->
+<!-- Chart Script -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
     const ctx = document.getElementById("expenseChart");
     if (!ctx) return;
 
-    const dataTag = document.getElementById("chart-data");
-    const chartData = JSON.parse(dataTag.textContent);
+    const chartData = JSON.parse(
+        document.getElementById("chart-data").textContent
+    );
 
     if (chartData.categories.length === 0) return;
 
