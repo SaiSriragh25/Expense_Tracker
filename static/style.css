@@ -1,0 +1,86 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f8;
+}
+
+.container {
+    width: 450px;
+    margin: 30px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+h2 {
+    text-align: center;
+}
+
+.total {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 12px;
+    text-align: center;
+    border-radius: 6px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.card {
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+.flash {
+    background: #e3f2fd;
+    color: #1565c0;
+    padding: 8px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.error {
+    background: #ffebee;
+    color: #c62828;
+    padding: 8px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+label {
+    font-weight: bold;
+}
+
+input {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: #eeeeee;
+    padding: 8px;
+}
+
+td {
+    padding: 8px;
+    border-bottom: 1px solid #ddd;
+}

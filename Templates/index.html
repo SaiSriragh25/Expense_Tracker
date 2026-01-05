@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Expense Tracker Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+<div class="container">
+    <h2>Expense Tracker</h2>
+
+    <!-- Total -->
+    <div class="total">
+        Total Expense: ₹ {{ total }}
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+        {% for msg in messages %}
+            <div class="flash">{{ msg }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+
+    <!-- Chart Card -->
+    <div class="card">
+        <h3>Expense by Category</h3>
+        <canvas id="expenseChart"></canvas>
+    </div>
+
+    <!-- Add Expense -->
+    <form method="POST">
+        <label>Amount</label>
+        <input type="number" name="amount" required>
+
+        <label>Category</label>
+        <input type="text" name="category" required>
+
+        <label>Date</label>
+        <input type="date" name="date" required>
+
+        <label>Description</label>
+        <input type="text" name="description">
+
+        <button type="submit">Add Expense</button>
+    </form>
+
+    <hr>
+
+    <!-- Expense Table -->
+    <table>
+        <tr>
+            <th>Amount</th>
+            <th>Category</th>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Action</th>
+        </tr>
+
+        {% for exp in expenses %}
+        <tr>
+            <td>₹ {{ exp.amount }}</td>
+            <td>{{ exp.category }}</td>
+            <td>{{ exp.date }}</td>
+            <td>{{ exp.description }}</td>
+            <td>
+                <a href="/edit/{{ exp.id }}">Edit</a> |
+                <a href="/delete/{{ exp.id }}">Delete</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+<!-- ✅ SAFE DATA (NO JS ERRORS) -->
+<script id="chart-data" type="application/json">
+{
+  "categories": {{ categories | tojson }},
+  "amounts": {{ amounts | tojson }}
+}
+</script>
+
+<!-- ✅ CLEAN JAVASCRIPT -->
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const ctx = document.getElementById("expenseChart");
+    if (!ctx) return;
+
+    const dataTag = document.getElementById("chart-data");
+    const chartData = JSON.parse(dataTag.textContent);
+
+    if (chartData.categories.length === 0) return;
+
+    new Chart(ctx, {
+        type: "bar",
+        data: {
+            labels: chartData.categories,
+            datasets: [{
+                label: "Total Expense (₹)",
+                data: chartData.amounts,
+                backgroundColor: "#42a5f5"
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            },
+            plugins: {
+                legend: { display: false }
+            }
+        }
+    });
+});
+</script>
+
+</body>
+</html>
