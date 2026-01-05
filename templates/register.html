@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Expense Tracker | Register</title>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body class="login-page">
+
+    <!-- Background icons -->
+    <div class="bg-icons">
+        <i class="fa-solid fa-burger"></i>
+        <i class="fa-solid fa-pizza-slice"></i>
+        <i class="fa-solid fa-mug-hot"></i>
+        <i class="fa-solid fa-cart-shopping"></i>
+        <i class="fa-solid fa-utensils"></i>
+    </div>
+
+    <!-- Register Card -->
+    <div class="login-card">
+        <h2>Create Account</h2>
+        <p>Register to track your expenses</p>
+
+        <form method="POST">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+
+            <button type="submit">
+                <i class="fa-solid fa-user-plus"></i> Register
+            </button>
+        </form>
+
+        {% if error %}
+            <span class="error">{{ error }}</span>
+        {% endif %}
+
+        <p style="margin-top:10px; font-size:13px;">
+            Already have an account?
+            <a href="{{ url_for('login') }}">Login</a>
+        </p>
+    </div>
+
+</body>
+</html>

@@ -1,7 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Expense Tracker Dashboard</title>
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
@@ -11,15 +15,20 @@
 </head>
 <body>
 
-<div class="container">
-    <h2>Expense Tracker</h2>
+<div class="dashboard">
 
-    <!-- Total -->
-    <div class="total">
+    <!-- HEADER -->
+    <div class="dashboard-header">
+        <h1>💰 Expense Tracker</h1>
+        <a href="{{ url_for('logout') }}" class="logout-btn">Logout</a>
+    </div>
+
+    <!-- TOTAL -->
+    <div class="summary-card">
         Total Expense: ₹ {{ total }}
     </div>
 
-    <!-- Flash Messages -->
+    <!-- FLASH -->
     {% with messages = get_flashed_messages() %}
       {% if messages %}
         {% for msg in messages %}
@@ -28,62 +37,64 @@
       {% endif %}
     {% endwith %}
 
-    <!-- Error -->
+    <!-- ERROR -->
     {% if error %}
         <div class="error">{{ error }}</div>
     {% endif %}
 
-    <!-- Chart -->
+    <!-- CHARTS -->
     <div class="card">
-        <h3>Expense by Category</h3>
-        <canvas id="expenseChart"></canvas>
+        <h3>📊 Expense Analysis</h3>
+
+        <div class="chart-grid">
+            <canvas id="expenseBar"></canvas>
+            <canvas id="expensePie"></canvas>
+        </div>
     </div>
 
-    <!-- Add Expense Form -->
-    <form method="POST">
-        <label>Amount</label>
-        <input type="number" name="amount" required>
+    <!-- ADD EXPENSE -->
+    <div class="card">
+        <h3>➕ Add Expense</h3>
+        <form method="POST">
+            <input type="number" name="amount" placeholder="Amount (₹)" required>
+            <input type="text" name="category" placeholder="Category (Food, Travel)" required>
+            <input type="date" name="date" required>
+            <input type="text" name="description" placeholder="Description (optional)">
+            <button type="submit">Add Expense</button>
+        </form>
+    </div>
 
-        <label>Category</label>
-        <input type="text" name="category" required>
+    <!-- TABLE -->
+    <div class="card">
+        <h3>📋 Expense History</h3>
+        <table>
+            <tr>
+                <th>Amount</th>
+                <th>Category</th>
+                <th>Date</th>
+                <th>Description</th>
+                <th>Action</th>
+            </tr>
 
-        <label>Date</label>
-        <input type="date" name="date" required>
+            {% for exp in expenses %}
+            <tr>
+                <td>₹ {{ exp.amount }}</td>
+                <td>{{ exp.category }}</td>
+                <td>{{ exp.date }}</td>
+                <td>{{ exp.description }}</td>
+                <td>
+                    <a href="{{ url_for('edit', id=exp.id) }}">✏️</a>
+                    <a href="{{ url_for('delete', id=exp.id) }}"
+                       onclick="return confirm('Delete this expense?')">🗑</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
 
-        <label>Description</label>
-        <input type="text" name="description">
-
-        <button type="submit">Add Expense</button>
-    </form>
-
-    <hr>
-
-    <!-- Expense Table -->
-    <table>
-        <tr>
-            <th>Amount</th>
-            <th>Category</th>
-            <th>Date</th>
-            <th>Description</th>
-            <th>Action</th>
-        </tr>
-
-        {% for exp in expenses %}
-        <tr>
-            <td>₹ {{ exp.amount }}</td>
-            <td>{{ exp.category }}</td>
-            <td>{{ exp.date }}</td>
-            <td>{{ exp.description }}</td>
-            <td>
-                <a href="{{ url_for('edit', id=exp.id) }}">Edit</a> |
-                <a href="{{ url_for('delete', id=exp.id) }}">Delete</a>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
 </div>
 
-<!-- Chart Data (Safe JSON) -->
+<!-- CHART DATA -->
 <script id="chart-data" type="application/json">
 {
   "categories": {{ categories | tojson }},
@@ -91,37 +102,51 @@
 }
 </script>
 
-<!-- Chart Script -->
+<!-- CHART SCRIPT -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
 
-    const ctx = document.getElementById("expenseChart");
-    if (!ctx) return;
-
-    const chartData = JSON.parse(
+    const data = JSON.parse(
         document.getElementById("chart-data").textContent
     );
 
-    if (chartData.categories.length === 0) return;
+    if (data.categories.length === 0) return;
 
-    new Chart(ctx, {
+    // BAR CHART
+    new Chart(document.getElementById("expenseBar"), {
         type: "bar",
         data: {
-            labels: chartData.categories,
+            labels: data.categories,
             datasets: [{
-                label: "Total Expense (₹)",
-                data: chartData.amounts,
-                backgroundColor: "#42a5f5"
+                label: "Expenses (₹)",
+                data: data.amounts,
+                backgroundColor: "#42a5f5",
+                borderRadius: 8
             }]
         },
         options: {
             responsive: true,
-            scales: {
-                y: { beginAtZero: true }
-            },
-            plugins: {
-                legend: { display: false }
-            }
+            plugins: { legend: { display: false } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+
+    // PIE CHART
+    new Chart(document.getElementById("expensePie"), {
+        type: "pie",
+        data: {
+            labels: data.categories,
+            datasets: [{
+                data: data.amounts,
+                backgroundColor: [
+                    "#ff6384",
+                    "#36a2eb",
+                    "#ffce56",
+                    "#4caf50",
+                    "#9c27b0",
+                    "#ff9800"
+                ]
+            }]
         }
     });
 });

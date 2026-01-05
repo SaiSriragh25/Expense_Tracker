@@ -1,86 +1,234 @@
+/* ===== GLOBAL ===== */
+* {
+    box-sizing: border-box;
+}
+
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f6f8;
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: #f3f6fb;
+    color: #333;
 }
 
-.container {
-    width: 450px;
-    margin: 30px auto;
-    background: white;
+/* ===== DASHBOARD ===== */
+.dashboard {
+    max-width: 1100px;
+    margin: 40px auto;
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
 
-h2 {
-    text-align: center;
+/* HEADER */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
 }
 
-.total {
-    background: #e8f5e9;
-    color: #2e7d32;
-    padding: 12px;
-    text-align: center;
-    border-radius: 6px;
-    font-weight: bold;
-    margin-bottom: 15px;
+.dashboard-header h1 {
+    font-size: 28px;
+    font-weight: 700;
 }
 
-.card {
-    background: #ffffff;
-    padding: 15px;
+.logout-btn {
+    background: #ff5252;
+    color: white;
+    padding: 10px 18px;
     border-radius: 8px;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* SUMMARY */
+.summary-card {
+    background: linear-gradient(135deg, #4CAF50, #43a047);
+    color: white;
+    padding: 25px;
+    border-radius: 16px;
+    font-size: 26px;
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+/* CARD */
+.card {
+    background: white;
+    padding: 25px;
+    border-radius: 18px;
+    margin-bottom: 30px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+.card h3 {
     margin-bottom: 20px;
 }
 
-.flash {
-    background: #e3f2fd;
-    color: #1565c0;
-    padding: 8px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    text-align: center;
-}
-
-.error {
-    background: #ffebee;
-    color: #c62828;
-    padding: 8px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-    text-align: center;
-}
-
-label {
-    font-weight: bold;
-}
-
-input {
+/* FORM */
+.card form input {
     width: 100%;
-    padding: 8px;
-    margin-bottom: 10px;
+    padding: 14px;
+    margin-bottom: 14px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
 }
 
-button {
-    width: 100%;
-    padding: 10px;
+.card form button {
     background: #4CAF50;
     color: white;
     border: none;
-    border-radius: 5px;
+    padding: 14px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
 }
 
+.card form button:hover {
+    background: #43a047;
+}
+
+/* TABLE */
 table {
     width: 100%;
     border-collapse: collapse;
 }
 
 th {
-    background: #eeeeee;
-    padding: 8px;
+    background: #f0f3f8;
+    padding: 14px;
+    font-weight: 600;
 }
 
 td {
+    padding: 14px;
+    border-bottom: 1px solid #eee;
+}
+
+td a {
+    margin-right: 10px;
+    text-decoration: none;
+    font-size: 18px;
+}
+
+/* FLASH & ERROR */
+.flash {
+    background: #e3f2fd;
+    color: #1565c0;
+    padding: 14px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+
+.error {
+    background: #ffebee;
+    color: #c62828;
+    padding: 14px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+}
+/* =========================
+   LOGIN PAGE STYLES
+   ========================= */
+
+.login-page {
+    height: 100vh;
+    background: linear-gradient(135deg, #ffb703, #fb8500);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Background icons */
+.bg-icons i {
+    position: absolute;
+    font-size: 90px;
+    color: rgba(0, 0, 0, 0.25);
+}
+
+/* Icon positions */
+.bg-icons i:nth-child(1) { top: 8%; left: 10%; }       /* Plane */
+.bg-icons i:nth-child(2) { top: 70%; left: 12%; }      /* Suitcase */
+.bg-icons i:nth-child(3) { top: 15%; right: 15%; }     /* Burger */
+.bg-icons i:nth-child(4) { bottom: 18%; right: 18%; }  /* Pizza */
+.bg-icons i:nth-child(5) { top: 45%; left: 48%; }      /* Coffee */
+.bg-icons i:nth-child(6) { bottom: 6%; right: 45%; }   /* Cart */
+.bg-icons i:nth-child(7) { top: 30%; right: 5%; }      /* Money */
+
+/* Login Card */
+.login-card {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 380px;
+    padding: 32px;
+    background: white;
+    border-radius: 18px;
+    text-align: center;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+}
+
+.login-card h2 {
+    color: #fb8500;
+    margin-bottom: 6px;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.login-card p {
+    color: #555;
+    font-size: 14px;
+    margin-bottom: 22px;
+}
+
+/* Inputs */
+.login-card input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+}
+
+/* Login button */
+.login-card button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 12px;
+    background: linear-gradient(135deg, #ff7a18, #ff9f1c);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.login-card button:hover {
+    opacity: 0.9;
+}
+
+/* Error message */
+.login-card .error {
+    display: block;
+    margin-top: 12px;
+    background: #ffe5e5;
+    color: #c62828;
     padding: 8px;
-    border-bottom: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 13px;
+}
+/* ===== CHART GRID ===== */
+.chart-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+}
+
+@media (max-width: 768px) {
+    .chart-grid {
+        grid-template-columns: 1fr;
+    }
 }

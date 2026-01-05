@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 import sqlite3
 import os
 
@@ -17,6 +17,8 @@ def get_db_connection():
 # ---------------- CREATE TABLE ----------------
 def init_db():
     conn = get_db_connection()
+
+    # Expenses table
     conn.execute("""
         CREATE TABLE IF NOT EXISTS expenses (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,14 +28,95 @@ def init_db():
             description TEXT
         )
     """)
+
+    # Users table
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS users (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE NOT NULL,
+            password TEXT NOT NULL
+        )
+    """)
+
+    # ✅ Ensure default user ALWAYS exists
+    user = conn.execute(
+        "SELECT * FROM users WHERE username='admin'"
+    ).fetchone()
+
+    if not user:
+        conn.execute(
+            "INSERT INTO users (username, password) VALUES (?, ?)",
+            ("admin", "admin123")
+        )
+
     conn.commit()
     conn.close()
 
 init_db()
 
-# ---------------- HOME ----------------
+# ---------------- REGISTER ----------------
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    error = None
+
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+        confirm_password = request.form.get("confirm_password")
+
+        if not username or not password:
+            error = "All fields are required"
+        elif password != confirm_password:
+            error = "Passwords do not match"
+        else:
+            try:
+                conn = get_db_connection()
+                conn.execute(
+                    "INSERT INTO users (username, password) VALUES (?, ?)",
+                    (username.strip(), password)
+                )
+                conn.commit()
+                conn.close()
+                flash("Account created successfully 🎉 Please login")
+                return redirect(url_for("login"))
+            except sqlite3.IntegrityError:
+                error = "Username already exists"
+
+    return render_template("register.html", error=error)
+
+# ---------------- LOGIN ----------------
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    error = None
+
+    if request.method == "POST":
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        if not username or not password:
+            error = "Please enter username and password"
+        else:
+            conn = get_db_connection()
+            user = conn.execute(
+                "SELECT * FROM users WHERE username=? AND password=?",
+                (username.strip(), password)
+            ).fetchone()
+            conn.close()
+
+            if user:
+                session["user"] = username
+                return redirect(url_for("home"))
+            else:
+                error = "Invalid username or password"
+
+    return render_template("login.html", error=error)
+
+# ---------------- HOME (PROTECTED) ----------------
 @app.route("/", methods=["GET", "POST"])
 def home():
+    if "user" not in session:
+        return redirect(url_for("login"))
+
     conn = get_db_connection()
     error = None
 
@@ -81,6 +164,9 @@ def home():
 # ---------------- DELETE ----------------
 @app.route("/delete/<int:id>")
 def delete(id):
+    if "user" not in session:
+        return redirect(url_for("login"))
+
     conn = get_db_connection()
     conn.execute("DELETE FROM expenses WHERE id=?", (id,))
     conn.commit()
@@ -91,6 +177,9 @@ def delete(id):
 # ---------------- EDIT ----------------
 @app.route("/edit/<int:id>", methods=["GET", "POST"])
 def edit(id):
+    if "user" not in session:
+        return redirect(url_for("login"))
+
     conn = get_db_connection()
     expense = conn.execute(
         "SELECT * FROM expenses WHERE id=?", (id,)
@@ -120,6 +209,12 @@ def edit(id):
     conn.close()
     return render_template("edit.html", expense=expense)
 
-# ---------------- RUN ----------------
-# if __name__ == "__main__":
-    # app.run(debug=True)
+# ---------------- LOGOUT ----------------
+@app.route("/logout")
+def logout():
+    session.pop("user", None)
+    return redirect(url_for("login"))
+
+# ---------------- RUN APP ----------------
+if __name__ == "__main__":
+    app.run(debug=True)
