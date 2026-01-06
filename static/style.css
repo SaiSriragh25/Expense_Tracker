@@ -128,6 +128,7 @@ td a {
     border-radius: 10px;
     margin-bottom: 20px;
 }
+
 /* =========================
    LOGIN PAGE STYLES
    ========================= */
@@ -147,22 +148,25 @@ td a {
 }
 
 /* Icon positions */
-.bg-icons i:nth-child(1) { top: 8%; left: 10%; }       /* Plane */
-.bg-icons i:nth-child(2) { top: 70%; left: 12%; }      /* Suitcase */
-.bg-icons i:nth-child(3) { top: 15%; right: 15%; }     /* Burger */
-.bg-icons i:nth-child(4) { bottom: 18%; right: 18%; }  /* Pizza */
-.bg-icons i:nth-child(5) { top: 45%; left: 48%; }      /* Coffee */
-.bg-icons i:nth-child(6) { bottom: 6%; right: 45%; }   /* Cart */
-.bg-icons i:nth-child(7) { top: 30%; right: 5%; }      /* Money */
+.bg-icons i:nth-child(1) { top: 8%; left: 10%; }
+.bg-icons i:nth-child(2) { top: 70%; left: 12%; }
+.bg-icons i:nth-child(3) { top: 15%; right: 15%; }
+.bg-icons i:nth-child(4) { bottom: 18%; right: 18%; }
+.bg-icons i:nth-child(5) { top: 45%; left: 48%; }
+.bg-icons i:nth-child(6) { bottom: 6%; right: 45%; }
+.bg-icons i:nth-child(7) { top: 30%; right: 5%; }
 
-/* Login Card */
+/* ===== MODIFIED LOGIN CARD (DEVICE FRIENDLY) ===== */
 .login-card {
     position: absolute;
-    top: 45%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 380px;
-    padding: 32px;
+
+    width: 90%;              /* mobile friendly */
+    max-width: 380px;        /* desktop same */
+    padding: 28px;           /* adjusted */
+
     background: white;
     border-radius: 18px;
     text-align: center;
@@ -220,6 +224,7 @@ td a {
     border-radius: 6px;
     font-size: 13px;
 }
+
 /* ===== CHART GRID ===== */
 .chart-grid {
     display: grid;
@@ -230,5 +235,16 @@ td a {
 @media (max-width: 768px) {
     .chart-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+/* Extra small devices */
+@media (max-width: 480px) {
+    .login-card {
+        padding: 22px;
+    }
+
+    .login-card h2 {
+        font-size: 24px;
     }
 }
